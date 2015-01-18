@@ -1,0 +1,49 @@
+
+* { box-sizing: border-box;
+  color: white; 
+  font-family: sans-serif; 
+  text-align: center; }
+
+html { background-color: rgb(66,66,66); }
+
+html, body, .border, .squares {
+  height: 100%;
+  margin: 0;
+  text-align: center;
+  width: 100%; }
+
+.menu { /*display: none;*/ }
+
+.btn { background-color: Lightgrey; 
+  color: black; 
+  height: 100px;
+  margin: 10px auto;
+  padding: 42px 0;
+  width: 100px; }
+  .btn:hover { 
+    background-color: white;
+    cursor: pointer; }
+
+.settings { display: none; }
+
+.bar { display: none; }
+  .bar * { margin: 0; position: relative; }
+  .accuracy { position: absolute; left: 0; top: 0; }
+
+.border { }
+
+.squares {
+  position: relative;
+  display: none; }
+
+.square {
+  background-color: Lightgrey;
+  border-radius: 4px;
+  position: absolute; }
+  .square.transition { 
+    -webkit-transition: background-color 1s; /* For Safari 3.1 to 6.0 */
+    transition: background-color 1s; }
+
+.results {
+  display: none;
+}
