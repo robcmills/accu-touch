@@ -186,13 +186,6 @@ var app = {
           }
           e.stopPropagation();
         });
-        // div.on('touchstart', function(e) {
-        //   console.log('touchstart');
-        //   if(self.isLevelStarted) {
-        //     self.squareClicked(e);
-        //   }
-        //   e.stopPropagation();
-        // });
       }
     }
 
@@ -245,7 +238,7 @@ var app = {
     $('.end-hit-miss').innerText = 
       'Hits: ' + this.hits + ' / Misses: ' + this.misses;
     $('.end-accuracy').innerText = 
-      'Accuracy: ' + parseInt(this.accuracy) + '%';
+      'Accuracy: ' + this.accuracy.toFixed(2) + '%';
   },
 
   startLevel: function() {
@@ -254,13 +247,13 @@ var app = {
     this.now = this.settings.levelLength,
     this.isLevelStarted = true;
 
-    // accuTimer(10000, 100, function(steps) {
-    //   self.now = self.now - (10 / steps);
-    //   timer.innerText = self.now.toFixed(2);
-    // }, function() {
-    //   timer.innerText = '0.0';
-    //   self.endLevel();
-    // });    
+    accuTimer(10000, 100, function(steps) {
+      self.now = self.now - (10 / steps);
+      timer.innerText = self.now.toFixed(2);
+    }, function() {
+      timer.innerText = '0.0';
+      self.endLevel();
+    });    
 
     this.highlightRandomSquare();
   },

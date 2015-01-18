@@ -53,6 +53,5 @@ html, body, .border, .squares {
     -webkit-transition: background-color 1s; /* For Safari 3.1 to 6.0 */
     transition: background-color 1s; }
 
-.results {
-  display: none;
-}
+.results { display: none; }
+  .results p { margin: 10px; }
