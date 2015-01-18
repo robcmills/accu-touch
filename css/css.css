@@ -2,6 +2,7 @@
 * { box-sizing: border-box;
   color: white; 
   font-family: sans-serif; 
+  margin: 0;
   text-align: center; }
 
 html { background-color: rgb(66,66,66); }
@@ -26,15 +27,16 @@ html, body, .border, .squares {
 
 .settings { display: none; }
 
-.bar { display: none; }
-  .bar * { margin: 0; position: relative; }
-  .accuracy { position: absolute; left: 0; top: 0; }
+.bar { display: none; 
+  height: 40px; 
+  margin: 0 auto 10px; 
+  padding: 10px 0; 
+  position: relative; }
+  .accuracy { position: absolute; left: 0; top: 10px; }
 
-.border { }
+.border { border: 2px solid white; display: none; margin: 0 auto; }
 
-.squares {
-  position: relative;
-  display: none; }
+.squares { position: relative; }
 
 .square {
   background-color: Lightgrey;

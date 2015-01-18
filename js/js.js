@@ -42,7 +42,7 @@ function getRandomInt(min, max) {
 
 var app = {
 
-  levelIsStarted: false,
+  isLevelStarted: false,
   now: 0.0,
   hits: 0,
   misses: 0,
@@ -50,11 +50,17 @@ var app = {
   squareSize: 0,
 
   settings: {
+    barHeight: 40,
+    margin: 10,
     columns: 3,
     rows: 3,
     margins: 5,
     levelLength: 10.0
   },
+
+  squares: $('.squares'),
+  border: $('.border'),
+  timer: $('.timer'),
 
   fillSettingsInputs: function() {
     $('.columns-input').value = this.settings.columns;
@@ -105,53 +111,85 @@ var app = {
   },
 
   resize: function() {
-    var squares = $('.squares'),
-    border = $('.border');
+    var squares = this.squares,
+    border = this.border;
 
     while(squares.firstChild) {
       squares.removeChild(squares.firstChild);
     }
 
-    border.style.padding = this.settings.margins + 'px';
-    border.style.height = 
-      $('body').offsetHeight - $('.bar').offsetHeight + 'px';
+    // border.style.padding = this.settings.margins + 'px';
+    // border.style.height = 
+    //   $('body').offsetHeight - $('.bar').offsetHeight + 'px';
+
+    /*
+    +---------+---------+  -------------------+
+    |         |         |  barHeight          |
+    |---------|---------|  ---+               |
+    |         |         |  margin             |
+    |     +---|---+     |  ----+              |
+    |     |   |   |     |  halfHeight         winHeight
+    +---------+---------+  ----+              |
+    |     |   |   |     |                     |
+    |     +---|---+     |                     |
+    |         |         |                     |
+    |         |         |                     |
+    |         |         |                     |
+    +---------+---------+  -------------------+
+              |---+ halfWidth    
+    +-----winWidth------+
+    */
 
     var 
-    squaresWidth = squares.offsetWidth,
-    squaresHeight = squares.offsetHeight,
-    squareWidth = squaresWidth / this.settings.columns,
-    squareHeight = squaresHeight / this.settings.rows;
+    winWidth = window.innerWidth,
+    winHeight = window.innerHeight, 
+    isPortrait = winWidth < winHeight,
+    halfHeight = winHeight / 2 - this.settings.barHeight - this.settings.margin,
+    halfWidth = winWidth / 2 - this.settings.margin,
+    squaresSide = halfHeight < halfWidth ? halfHeight : halfWidth;
+    squaresSide *= 2;
+    squaresSide += 'px';
+    this.border.style.height = squaresSide;
+    this.border.style.width = squaresSide;
+    // this.border.style.margintop = '25px';
+    $('.bar').style.width = squaresSide;
 
-    for (x = 0; x < this.settings.columns; x++) { 
-      for (y = 0; y < this.settings.rows; y++) { 
-        div = document.createElement('div'); 
-        div.className = 'x' + x + 'y' + y + ' square';
-        div.style.left = x * squareWidth + 'px';
-        div.style.bottom = y * squareHeight + 'px';
-        var 
-          squareInnerWidth = squareWidth - (this.settings.margins * 2);
-          squareInnerHeight = squareHeight - (this.settings.margins * 2);
-        this.squareSize = squareInnerWidth * squareInnerHeight;
-        div.style.width = squareInnerWidth + 'px';
-        div.style.height = squareInnerHeight + 'px';
-        div.style.margin = this.settings.margins + 'px';
-        squares.appendChild(div);
 
-        var self = this;
-        div.on('click', function(e) {
-          if(self.levelIsStarted) {
-            self.squareClicked(e);
-          }
-          e.stopPropagation();
-        });
-        div.on('touchstart', function(e) {
-          if(self.levelIsStarted) {
-            self.squareClicked(e);
-          }
-          e.stopPropagation();
-        });
-      }
-    }
+    // squaresWidth = squares.offsetWidth,
+    // squaresHeight = squares.offsetHeight,
+    // squareWidth = squaresWidth / this.settings.columns,
+    // squareHeight = squaresHeight / this.settings.rows;
+
+    // for (x = 0; x < this.settings.columns; x++) { 
+    //   for (y = 0; y < this.settings.rows; y++) { 
+    //     div = document.createElement('div'); 
+    //     div.className = 'x' + x + 'y' + y + ' square';
+    //     div.style.left = x * squareWidth + 'px';
+    //     div.style.bottom = y * squareHeight + 'px';
+    //     var 
+    //       squareInnerWidth = squareWidth - (this.settings.margins * 2);
+    //       squareInnerHeight = squareHeight - (this.settings.margins * 2);
+    //     this.squareSize = squareInnerWidth * squareInnerHeight;
+    //     div.style.width = squareInnerWidth + 'px';
+    //     div.style.height = squareInnerHeight + 'px';
+    //     div.style.margin = this.settings.margins + 'px';
+    //     squares.appendChild(div);
+
+    //     var self = this;
+    //     div.on('click', function(e) {
+    //       if(self.isLevelStarted) {
+    //         self.squareClicked(e);
+    //       }
+    //       e.stopPropagation();
+    //     });
+    //     div.on('touchstart', function(e) {
+    //       if(self.isLevelStarted) {
+    //         self.squareClicked(e);
+    //       }
+    //       e.stopPropagation();
+    //     });
+    //   }
+    // }
 
   },
 
@@ -168,7 +206,7 @@ var app = {
       hide($('.menu'));
       hide($('.settings'));
       show($('.bar'));
-      show($('.squares'));
+      show($('.border'));
       self.play();
     });
 
@@ -177,12 +215,23 @@ var app = {
     };
   },
 
+  keyBinds: function() {
+    document.onkeypress = function(e) {
+      e = e || window.event;
+      console.log('keypress ', e);
+      if(e.keyCode == 32) { // space
+        // this.pause();
+      }
+    };  
+  },
+
   ready: function() {
     this.menuBinds();
+    // this.keyBinds();
   },
 
   endLevel: function() {
-    this.levelIsStarted = false;
+    this.isLevelStarted = false;
     hide($('.bar'));
     hide($('.border'));
     show($('.results'));
@@ -196,24 +245,24 @@ var app = {
 
   startLevel: function() {
     var self = this,
-    timer = $('.time');
+    timer = this.timer;
     this.now = this.settings.levelLength,
-    this.levelIsStarted = true;
+    this.isLevelStarted = true;
 
-    accuTimer(10000, 100, function(steps) {
-      self.now = self.now - (10 / steps);
-      timer.innerText = self.now.toFixed(2);
-    }, function() {
-      timer.innerText = '0.0';
-      self.endLevel();
-    });    
+    // accuTimer(10000, 100, function(steps) {
+    //   self.now = self.now - (10 / steps);
+    //   timer.innerText = self.now.toFixed(2);
+    // }, function() {
+    //   timer.innerText = '0.0';
+    //   self.endLevel();
+    // });    
 
-    this.highlightRandomSquare();
+    // this.highlightRandomSquare();
   },
 
   countDown: function() {
     var self = this,
-    timer = $('.time');
+    timer = this.timer;
     timer.innerText = 3;
     setTimeout(function(){ timer.innerText = 2; }, 1000);
     setTimeout(function(){ timer.innerText = 1; }, 2000);
@@ -226,7 +275,7 @@ var app = {
 
     var self = this;
     $('.squares').on('click', function() {
-      if(self.levelIsStarted) {
+      if(self.isLevelStarted) {
         self.misses++;
         self.updateAccuracy();
       }
