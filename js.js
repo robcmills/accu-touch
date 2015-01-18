@@ -42,20 +42,23 @@ function getRandomInt(min, max) {
 
 var app = {
 
-  isLevelStarted: false,
-  now: 0.0,
-  hits: 0,
-  misses: 0,
   accuracy: 100,
+  activeSquare: null,
+  hits: 0,
+  isLevelStarted: false,
+  misses: 0,
+  now: 0.0,
   squareSize: 0,
 
   settings: {
+    activeColor: 'orange',
     barHeight: 40,
     margin: 10,
     columns: 3,
     rows: 3,
     margins: 5,
-    levelLength: 10.0
+    levelLength: 10.0,
+    squareColor: 'grey',
   },
 
   squares: $('.squares'),
@@ -71,10 +74,15 @@ var app = {
   highlightRandomSquare: function() {
     var col = getRandomInt(0, this.settings.columns - 1),
       row = getRandomInt(0, this.settings.rows - 1),
-      square = $('.x' + col + 'y' + row);
+      square = $('.squares .x' + col + 'y' + row);
+    if(square === this.activeSquare) { 
+      this.highlightRandomSquare(); 
+      return; 
+    }
     square.classList.remove('transition');
-    square.style.backgroundColor = 'blue';
     square.classList.add('active');
+    // square.style.backgroundColor = this.settings.activeColor;
+    this.activeSquare = square;
   },
 
   updateAccuracy: function() {
@@ -84,29 +92,29 @@ var app = {
 
   squareClicked: function(event) {
     var 
+      self = this,
+      activeSquare = this.activeSquare,
       el = event.target,
-      isHit = el.classList.contains('active'),
-      active;
+      isHit = el === activeSquare;
     el.classList.remove('transition');
     if(isHit) {
-      this.hits++;
+      this.hits++ 
       el.classList.remove('active');
-    } else {
+      el.classList.add('hit');
+    } else { 
       this.misses++;
-      active = $('.square.active');
-      active.classList.remove('transition');
-      active.classList.remove('active');
+      el.classList.add('miss');
+      activeSquare.classList.remove('active');
     }
-    el.style.backgroundColor = isHit ? 'green' : 'red';
     this.updateAccuracy();
-    setTimeout(function() {
-      el.classList.add('transition');
-      el.style.backgroundColor = 'lightgrey';
-      if(!isHit) {
-        active.classList.add('transition');
-        active.style.backgroundColor = 'lightgrey';
-      }
-    }, 10);
+
+    var forceRedraw = el.offsetWidth;  // hax
+    el.classList.add('transition');
+    if(isHit) {
+      el.classList.remove('hit');
+    } else {
+      el.classList.remove('miss');
+    }
     this.highlightRandomSquare();
   },
 
@@ -118,25 +126,22 @@ var app = {
       squares.removeChild(squares.firstChild);
     }
 
-    // border.style.padding = this.settings.margins + 'px';
-    // border.style.height = 
-    //   $('body').offsetHeight - $('.bar').offsetHeight + 'px';
-
     /*
-    +---------+---------+  -------------------+
-    |         |         |  barHeight          |
-    |---------|---------|  ---+               |
-    |         |         |  margin             |
-    |     +---|---+     |  ----+              |
-    |     |   |   |     |  halfHeight         winHeight
-    +---------+---------+  ----+              |
-    |     |   |   |     |                     |
-    |     +---|---+     |                     |
-    |         |         |                     |
-    |         |         |                     |
-    |         |         |                     |
-    +---------+---------+  -------------------+
+    +---------+---------+  ------------+
+    |         |         |  barHeight   |
+    |---------|---------|  ---+        |
+    |         |         |  margin      |
+    |     +---|---+     |  ----+       |
+    |     |   |   |     |  halfHeight  winHeight
+    +---------+---------+  ----+       |
+    |     |   |   |     |              |
+    |     +---|---+     |              |
+    |         |         |              |
+    |         |         |              |
+    |         |         |              |
+    +---------+---------+  ------------+
               |---+ halfWidth    
+                  +-----+ margin
     +-----winWidth------+
     */
 
@@ -151,45 +156,45 @@ var app = {
     squaresSide += 'px';
     this.border.style.height = squaresSide;
     this.border.style.width = squaresSide;
-    // this.border.style.margintop = '25px';
     $('.bar').style.width = squaresSide;
 
+    squaresWidth = squares.offsetWidth,
+    squaresHeight = squares.offsetHeight,
+    squareWidth = squaresWidth / this.settings.columns,
+    squareHeight = squaresHeight / this.settings.rows;
 
-    // squaresWidth = squares.offsetWidth,
-    // squaresHeight = squares.offsetHeight,
-    // squareWidth = squaresWidth / this.settings.columns,
-    // squareHeight = squaresHeight / this.settings.rows;
+    for (x = 0; x < this.settings.columns; x++) { 
+      for (y = 0; y < this.settings.rows; y++) { 
+        div = document.createElement('div'); 
+        div.className = 'x' + x + 'y' + y + ' square';
+        div.style.left = x * squareWidth + 'px';
+        div.style.bottom = y * squareHeight + 'px';
+        var 
+          squareInnerWidth = squareWidth - (this.settings.margins * 2);
+          squareInnerHeight = squareHeight - (this.settings.margins * 2);
+        this.squareSize = squareInnerWidth * squareInnerHeight;
+        div.style.width = squareInnerWidth + 'px';
+        div.style.height = squareInnerHeight + 'px';
+        div.style.margin = this.settings.margins + 'px';
+        squares.appendChild(div);
 
-    // for (x = 0; x < this.settings.columns; x++) { 
-    //   for (y = 0; y < this.settings.rows; y++) { 
-    //     div = document.createElement('div'); 
-    //     div.className = 'x' + x + 'y' + y + ' square';
-    //     div.style.left = x * squareWidth + 'px';
-    //     div.style.bottom = y * squareHeight + 'px';
-    //     var 
-    //       squareInnerWidth = squareWidth - (this.settings.margins * 2);
-    //       squareInnerHeight = squareHeight - (this.settings.margins * 2);
-    //     this.squareSize = squareInnerWidth * squareInnerHeight;
-    //     div.style.width = squareInnerWidth + 'px';
-    //     div.style.height = squareInnerHeight + 'px';
-    //     div.style.margin = this.settings.margins + 'px';
-    //     squares.appendChild(div);
-
-    //     var self = this;
-    //     div.on('click', function(e) {
-    //       if(self.isLevelStarted) {
-    //         self.squareClicked(e);
-    //       }
-    //       e.stopPropagation();
-    //     });
-    //     div.on('touchstart', function(e) {
-    //       if(self.isLevelStarted) {
-    //         self.squareClicked(e);
-    //       }
-    //       e.stopPropagation();
-    //     });
-    //   }
-    // }
+        var self = this;
+        div.on('click', function(e) {
+          console.log('click');
+          if(self.isLevelStarted) {
+            self.squareClicked(e);
+          }
+          e.stopPropagation();
+        });
+        // div.on('touchstart', function(e) {
+        //   console.log('touchstart');
+        //   if(self.isLevelStarted) {
+        //     self.squareClicked(e);
+        //   }
+        //   e.stopPropagation();
+        // });
+      }
+    }
 
   },
 
@@ -257,7 +262,7 @@ var app = {
     //   self.endLevel();
     // });    
 
-    // this.highlightRandomSquare();
+    this.highlightRandomSquare();
   },
 
   countDown: function() {

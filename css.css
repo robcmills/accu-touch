@@ -13,9 +13,13 @@ html, body, .border, .squares {
   text-align: center;
   width: 100%; }
 
+.title { padding: 1em; }
+
 .menu { /*display: none;*/ }
 
-.btn { background-color: Lightgrey; 
+.btn { 
+  background-color: rgb(166,166,166); 
+  border-radius: 4px;
   color: black; 
   height: 100px;
   margin: 10px auto;
@@ -34,14 +38,17 @@ html, body, .border, .squares {
   position: relative; }
   .accuracy { position: absolute; left: 0; top: 10px; }
 
-.border { border: 2px solid white; display: none; margin: 0 auto; }
+.border { display: none; margin: 0 auto; }
 
 .squares { position: relative; }
 
 .square {
-  background-color: Lightgrey;
+  background-color: Grey;
   border-radius: 4px;
   position: absolute; }
+  .square.active { background-color: orange; }
+  .square.hit { background-color: green; }
+  .square.miss { background-color: red; }
   .square.transition { 
     -webkit-transition: background-color 1s; /* For Safari 3.1 to 6.0 */
     transition: background-color 1s; }
