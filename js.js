@@ -43,6 +43,7 @@ function getRandomInt(min, max) {
 var app = {
 
   accuracy: 100,
+  activeLevel: 0,
   activeSquare: null,
   hits: 0,
   isLevelStarted: false,
@@ -61,27 +62,34 @@ var app = {
     squareColor: 'grey',
   },
 
+  levels: [
+    {num: 1, columns: 3, rows: 3, margins: 5, timeLength: 10.0},
+    {num: 2, columns: 5, rows: 5, margins: 5, timeLength: 10.0}
+  ],
+
   squares: $('.squares'),
   border: $('.border'),
   timer: $('.timer'),
 
-  fillSettingsInputs: function() {
-    $('.columns-input').value = this.settings.columns;
-    $('.rows-input').value = this.settings.rows;
-    $('.margins-input').value = this.settings.margins;
-  },
+  // fillSettingsInputs: function() {
+  //   $('.columns-input').value = this.settings.columns;
+  //   $('.rows-input').value = this.settings.rows;
+  //   $('.margins-input').value = this.settings.margins;
+  // },
 
-  highlightRandomSquare: function() {
-    var col = getRandomInt(0, this.settings.columns - 1),
-      row = getRandomInt(0, this.settings.rows - 1),
+  activateRandomSquare: function() {
+    var 
+      columns = this.levels[this.activeLevel].columns,
+      rows = this.levels[this.activeLevel].rows,
+      col = getRandomInt(0, columns - 1),
+      row = getRandomInt(0, rows - 1),
       square = $('.squares .x' + col + 'y' + row);
     if(square === this.activeSquare) { 
-      this.highlightRandomSquare(); 
+      this.activateRandomSquare(); 
       return; 
     }
     square.classList.remove('transition');
     square.classList.add('active');
-    // square.style.backgroundColor = this.settings.activeColor;
     this.activeSquare = square;
   },
 
@@ -115,7 +123,7 @@ var app = {
     } else {
       el.classList.remove('miss');
     }
-    this.highlightRandomSquare();
+    this.activateRandomSquare();
   },
 
   resize: function() {
@@ -160,18 +168,22 @@ var app = {
 
     squaresWidth = squares.offsetWidth,
     squaresHeight = squares.offsetHeight,
-    squareWidth = squaresWidth / this.settings.columns,
-    squareHeight = squaresHeight / this.settings.rows;
+    activeLevel = this.levels[this.activeLevel],
+    columns = activeLevel.columns,
+    rows = activeLevel.rows,
+    margins = activeLevel.margins,
+    squareWidth = squaresWidth / columns,
+    squareHeight = squaresHeight / rows;
 
-    for (x = 0; x < this.settings.columns; x++) { 
-      for (y = 0; y < this.settings.rows; y++) { 
+    for (x = 0; x < columns; x++) { 
+      for (y = 0; y < rows; y++) { 
         div = document.createElement('div'); 
         div.className = 'x' + x + 'y' + y + ' square';
         div.style.left = x * squareWidth + 'px';
         div.style.bottom = y * squareHeight + 'px';
         var 
-          squareInnerWidth = squareWidth - (this.settings.margins * 2);
-          squareInnerHeight = squareHeight - (this.settings.margins * 2);
+          squareInnerWidth = squareWidth - (margins * 2);
+          squareInnerHeight = squareHeight - (margins * 2);
         this.squareSize = squareInnerWidth * squareInnerHeight;
         div.style.width = squareInnerWidth + 'px';
         div.style.height = squareInnerHeight + 'px';
@@ -180,7 +192,6 @@ var app = {
 
         var self = this;
         div.on('click', function(e) {
-          console.log('click');
           if(self.isLevelStarted) {
             self.squareClicked(e);
           }
@@ -255,7 +266,7 @@ var app = {
       self.endLevel();
     });    
 
-    this.highlightRandomSquare();
+    this.activateRandomSquare();
   },
 
   countDown: function() {
