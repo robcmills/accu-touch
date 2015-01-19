@@ -64,7 +64,10 @@ var app = {
 
   levels: [
     {num: 1, columns: 3, rows: 3, margins: 5, timeLength: 10.0},
-    {num: 2, columns: 5, rows: 5, margins: 5, timeLength: 10.0}
+    {num: 2, columns: 4, rows: 4, margins: 5, timeLength: 10.0},
+    {num: 3, columns: 5, rows: 5, margins: 5, timeLength: 10.0},
+    {num: 4, columns: 6, rows: 6, margins: 5, timeLength: 10.0},
+    {num: 5, columns: 7, rows: 7, margins: 5, timeLength: 10.0},
   ],
 
   squares: $('.squares'),
@@ -96,6 +99,9 @@ var app = {
   updateAccuracy: function() {
     this.accuracy = this.hits / (this.hits + this.misses) * 100;
     $('.accuracy').innerText = parseInt(this.accuracy) + '%';
+  },
+  updateLevel: function() {
+    $('.level').innerText = this.activeLevel + 1 + '/' + this.levels.length;
   },
 
   squareClicked: function(event) {
@@ -212,10 +218,6 @@ var app = {
       hide($('.settings'));
     });
     $('.play-btn').on('click', function() {
-      hide($('.menu'));
-      hide($('.settings'));
-      show($('.bar'));
-      show($('.border'));
       self.play();
     });
 
@@ -234,8 +236,32 @@ var app = {
     };  
   },
 
+  playBinds: function() {
+    var self = this;
+    $('.squares').on('click', function() {
+      if(self.isLevelStarted) {
+        var active = self.activeSquare;
+        self.misses++;
+        active.classList.remove('transition');
+        active.classList.remove('active');
+        active.classList.add('miss');
+        self.updateAccuracy();
+
+        var forceRedraw = active.offsetWidth;  // hax
+        active.classList.add('transition');
+        active.classList.remove('miss');
+        self.activateRandomSquare();
+      }
+    });
+    $('.results .next').on('click', function() {
+      self.activeLevel++;
+      self.play();
+    });
+  },
+
   ready: function() {
     this.menuBinds();
+    this.playBinds();
     // this.keyBinds();
   },
 
@@ -243,13 +269,19 @@ var app = {
     this.isLevelStarted = false;
     hide($('.bar'));
     hide($('.border'));
+    hide($('.results .next'));
     show($('.results'));
+    $('.end-level').innerText = 'Level: ' + 
+      (this.activeLevel + 1) + '/' + this.levels.length;
     $('.end-square-size').innerText = 
       'Square size: ' + parseInt(this.squareSize) + ' pixels';
     $('.end-hit-miss').innerText = 
       'Hits: ' + this.hits + ' / Misses: ' + this.misses;
     $('.end-accuracy').innerText = 
       'Accuracy: ' + this.accuracy.toFixed(2) + '%';
+    setTimeout(function() {
+      show($('.results .next'));
+    }, 1000);
   },
 
   startLevel: function() {
@@ -278,17 +310,24 @@ var app = {
     setTimeout(function(){ self.startLevel(); }, 3000);
   },
 
-  play: function() {
+  resetLevel: function() {
+    this.accuracy = 100;
+    this.hits = 0;
+    this.misses = 0;
     this.resize();
-    this.countDown();
+    this.updateLevel();
+    // this.updateAccuracy();
+  },
 
-    var self = this;
-    $('.squares').on('click', function() {
-      if(self.isLevelStarted) {
-        self.misses++;
-        self.updateAccuracy();
-      }
-    });
+  play: function() {
+    hide($('.menu'));
+    hide($('.settings'));
+    hide($('.results'));
+    show($('.bar'));
+    show($('.border'));
+
+    this.resetLevel();
+    this.countDown();
   },
 
   init: function() {

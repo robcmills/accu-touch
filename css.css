@@ -13,7 +13,7 @@ html, body, .border, .squares {
   text-align: center;
   width: 100%; }
 
-.title { padding: 1em; }
+.title { padding: 10px; }
 
 .menu { /*display: none;*/ }
 
@@ -37,6 +37,7 @@ html, body, .border, .squares {
   padding: 10px 0; 
   position: relative; }
   .accuracy { position: absolute; left: 0; top: 10px; }
+  .level { position: absolute; right: 0; top: 10px; }
 
 .border { display: none; margin: 0 auto; }
 
@@ -55,3 +56,5 @@ html, body, .border, .squares {
 
 .results { display: none; }
   .results p { margin: 10px; }
+  .stats { margin-bottom: 1em; }
+  .results .next { display: none; }
