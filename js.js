@@ -1,9 +1,9 @@
 
-(function() {
+// (function() {
 
 if(!(!!window.addEventListener || !!document.querySelector)) {
   alert('Please use a more modern browser.');
-  return; 
+  // return; 
 }
 
 var $ = document.querySelector.bind(document);
@@ -17,10 +17,13 @@ function hide(el) {
 };
 
 function accuTimer(length, resolution, oninstance, oncomplete) {
-  var steps = (length / 100) * (resolution / 10),
-    speed = length / steps,
+  //               1000    100
+  var steps = (length / 100) * (resolution / 10), // 100
+    speed = length / steps, // 10
     count = 0,
     start = new Date().getTime();
+
+  console.log('steps', steps, 'speed', speed);
 
   function instance() {
     if(count++ == steps) {
@@ -50,24 +53,23 @@ var app = {
   misses: 0,
   now: 0.0,
   squareSize: 0,
+  totalHits: 0,
+  totalMisses: 0,
 
   settings: {
     activeColor: 'orange',
     barHeight: 40,
     margin: 10,
-    columns: 3,
-    rows: 3,
-    margins: 5,
-    levelLength: 10.0,
     squareColor: 'grey',
   },
 
   levels: [
-    {num: 1, columns: 3, rows: 3, margins: 5, timeLength: 10.0},
-    {num: 2, columns: 4, rows: 4, margins: 5, timeLength: 10.0},
-    {num: 3, columns: 5, rows: 5, margins: 5, timeLength: 10.0},
-    {num: 4, columns: 6, rows: 6, margins: 5, timeLength: 10.0},
-    {num: 5, columns: 7, rows: 7, margins: 5, timeLength: 10.0},
+    {num: 1, columns: 2, rows: 2, margins: 10, timeLength: 10.0},
+    {num: 2, columns: 4, rows: 4, margins: 10, timeLength: 20.0},
+    {num: 3, columns: 8, rows: 8, margins: 10, timeLength: 40.0},
+    {num: 4, columns: 10, rows: 10, margins: 10, timeLength: 80.0},
+    {num: 5, columns: 10, rows: 10, margins: 20, timeLength: 80.0},
+    {num: 6, columns: 10, rows: 10, margins: 40, timeLength: 80.0},
   ],
 
   squares: $('.squares'),
@@ -97,8 +99,13 @@ var app = {
   },
 
   updateAccuracy: function() {
-    this.accuracy = this.hits / (this.hits + this.misses) * 100;
-    $('.accuracy').innerText = parseInt(this.accuracy) + '%';
+    if(this.hits || this.misses) {
+      this.accuracy = this.hits / (this.hits + this.misses) * 100;
+      $('.accuracy').innerText = parseInt(this.accuracy) + '%';
+      show($('.accuracy'));
+    } else {
+      hide($('.accuracy'));
+    }
   },
   updateLevel: function() {
     $('.level').innerText = this.activeLevel + 1 + '/' + this.levels.length;
@@ -112,11 +119,13 @@ var app = {
       isHit = el === activeSquare;
     el.classList.remove('transition');
     if(isHit) {
-      this.hits++ 
+      this.hits++;
+      this.totalHits++;
       el.classList.remove('active');
       el.classList.add('hit');
     } else { 
       this.misses++;
+      this.totalMisses++;
       el.classList.add('miss');
       activeSquare.classList.remove('active');
     }
@@ -208,6 +217,16 @@ var app = {
 
   },
 
+  endGame: function() {
+    hide($('.results .stats'));
+    hide($('.results .next'));
+    $('.results .title').innerText = 'Game over.'
+    // $('.results .next').innerText = 'AGAIN';
+    // this.activeLevel = -1;
+    // this.totalHits = 0;
+    // this.totalMisses = 0;
+  },
+
   menuBinds: function() {
     var self = this;
     // $('.settings-btn').on('click', function() {
@@ -242,6 +261,7 @@ var app = {
       if(self.isLevelStarted) {
         var active = self.activeSquare;
         self.misses++;
+        self.totalMisses++;
         active.classList.remove('transition');
         active.classList.remove('active');
         active.classList.add('miss');
@@ -255,7 +275,11 @@ var app = {
     });
     $('.results .next').on('click', function() {
       self.activeLevel++;
-      self.play();
+      if(self.activeLevel >= self.levels.length){
+        self.endGame();
+      } else {
+        self.play();
+      }
     });
   },
 
@@ -285,13 +309,20 @@ var app = {
   },
 
   startLevel: function() {
-    var self = this,
-    timer = this.timer;
-    this.now = this.settings.levelLength,
+    console.log('startLevel');
+    var 
+      self = this,
+      timer = this.timer;
+      level = this.levels[this.activeLevel],
+      length = level.timeLength * 1000;
+    console.log('activeLevel', this.activeLevel);
+    console.log('level', level);
+    console.log('length', length);
+    this.now = level.timeLength;
     this.isLevelStarted = true;
 
-    accuTimer(10000, 100, function(steps) {
-      self.now = self.now - (10 / steps);
+    accuTimer(length, 100, function(steps, count) {
+      self.now = (length - (length / steps * count)) / 1000;
       timer.innerText = self.now.toFixed(2);
     }, function() {
       timer.innerText = '0.0';
@@ -316,7 +347,7 @@ var app = {
     this.misses = 0;
     this.resize();
     this.updateLevel();
-    // this.updateAccuracy();
+    this.updateAccuracy();
   },
 
   play: function() {
@@ -339,4 +370,4 @@ var app = {
 
 };
 app.init();
-})();
+// })();
