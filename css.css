@@ -14,6 +14,7 @@ html, body, .border, .squares {
   width: 100%; }
 
 .title { padding: 10px; }
+  .title p { padding: 1em; }
 
 .menu { /*display: none;*/ }
 

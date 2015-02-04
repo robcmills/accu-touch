@@ -67,9 +67,8 @@ var app = {
     {num: 1, columns: 2, rows: 2, margins: 10, timeLength: 10.0},
     {num: 2, columns: 4, rows: 4, margins: 10, timeLength: 20.0},
     {num: 3, columns: 8, rows: 8, margins: 10, timeLength: 40.0},
-    {num: 4, columns: 10, rows: 10, margins: 10, timeLength: 80.0},
-    {num: 5, columns: 10, rows: 10, margins: 20, timeLength: 80.0},
-    {num: 6, columns: 10, rows: 10, margins: 40, timeLength: 80.0},
+    {num: 4, columns: 10, rows: 10, margins: 10, timeLength: 60.0},
+    {num: 5, columns: 15, rows: 15, margins: 10, timeLength: 90.0},
   ],
 
   squares: $('.squares'),
