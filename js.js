@@ -17,13 +17,10 @@ function hide(el) {
 };
 
 function accuTimer(length, resolution, oninstance, oncomplete) {
-  //               1000    100
-  var steps = (length / 100) * (resolution / 10), // 100
-    speed = length / steps, // 10
+  var steps = (length / 100) * (resolution / 10), 
+    speed = length / steps, 
     count = 0,
     start = new Date().getTime();
-
-  console.log('steps', steps, 'speed', speed);
 
   function instance() {
     if(count++ == steps) {
@@ -67,8 +64,8 @@ var app = {
     {num: 1, columns: 2, rows: 2, margins: 10, timeLength: 10.0},
     {num: 2, columns: 4, rows: 4, margins: 10, timeLength: 20.0},
     {num: 3, columns: 8, rows: 8, margins: 10, timeLength: 40.0},
-    {num: 4, columns: 10, rows: 10, margins: 10, timeLength: 60.0},
-    {num: 5, columns: 15, rows: 15, margins: 10, timeLength: 90.0},
+    {num: 4, columns: 10, rows: 10, margins: 5, timeLength: 60.0},
+    {num: 5, columns: 15, rows: 15, margins: 5, timeLength: 60.0},
   ],
 
   squares: $('.squares'),
@@ -168,11 +165,13 @@ var app = {
     */
 
     var 
+    activeLevel = this.levels[this.activeLevel],
+    margins = activeLevel.margins,
     winWidth = window.innerWidth,
     winHeight = window.innerHeight, 
     isPortrait = winWidth < winHeight,
-    halfHeight = winHeight / 2 - this.settings.barHeight - this.settings.margin,
-    halfWidth = winWidth / 2 - this.settings.margin,
+    halfHeight = winHeight / 2 - this.settings.barHeight - margins,
+    halfWidth = winWidth / 2 - margins,
     squaresSide = halfHeight < halfWidth ? halfHeight : halfWidth;
     squaresSide *= 2;
     squaresSide += 'px';
@@ -182,10 +181,8 @@ var app = {
 
     squaresWidth = squares.offsetWidth,
     squaresHeight = squares.offsetHeight,
-    activeLevel = this.levels[this.activeLevel],
     columns = activeLevel.columns,
     rows = activeLevel.rows,
-    margins = activeLevel.margins,
     squareWidth = squaresWidth / columns,
     squareHeight = squaresHeight / rows;
 
@@ -201,7 +198,7 @@ var app = {
         this.squareSize = squareInnerWidth * squareInnerHeight;
         div.style.width = squareInnerWidth + 'px';
         div.style.height = squareInnerHeight + 'px';
-        div.style.margin = this.settings.margins + 'px';
+        div.style.margin = margins + 'px';
         squares.appendChild(div);
 
         var self = this;
@@ -217,13 +214,12 @@ var app = {
   },
 
   endGame: function() {
+    hide($('.results .title'));
     hide($('.results .stats'));
     hide($('.results .next'));
-    $('.results .title').innerText = 'Game over.'
-    // $('.results .next').innerText = 'AGAIN';
-    // this.activeLevel = -1;
-    // this.totalHits = 0;
-    // this.totalMisses = 0;
+    $('.gold-star .msg').innerHTML = 'Thanks for participating in this ' +
+      'experiment.<br>For your efforts here is a gold star:'
+    show($('.gold-star'));
   },
 
   menuBinds: function() {
@@ -308,15 +304,11 @@ var app = {
   },
 
   startLevel: function() {
-    console.log('startLevel');
     var 
       self = this,
       timer = this.timer;
       level = this.levels[this.activeLevel],
       length = level.timeLength * 1000;
-    console.log('activeLevel', this.activeLevel);
-    console.log('level', level);
-    console.log('length', length);
     this.now = level.timeLength;
     this.isLevelStarted = true;
 

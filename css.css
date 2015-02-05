@@ -59,3 +59,5 @@ html, body, .border, .squares {
   .results p { margin: 10px; }
   .stats { margin-bottom: 1em; }
   .results .next { display: none; }
+  .results .gold-star { display: none; }
+    .results .gold-star img { height: 150px; }
