@@ -46,7 +46,7 @@ html, body, .border, .squares {
 
 .square {
   background-color: Grey;
-  border-radius: 4px;
+  border-radius: 2px;
   position: absolute; }
   .square.active { background-color: orange; }
   .square.hit { background-color: green; }
@@ -60,4 +60,5 @@ html, body, .border, .squares {
   .stats { margin-bottom: 1em; }
   .results .next { display: none; }
   .results .gold-star { display: none; }
+    .results .gold-star .msg { margin: 2em; }
     .results .gold-star img { height: 150px; }
